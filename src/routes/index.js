@@ -1,9 +1,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import HelloWorld from '../components/HelloWorld.vue'
+import index from '../components/index.vue';
+import Login from '../components/login/Login.vue';
 const routes = [
   {
-    path: '/hello',
-    component:HelloWorld
+    path: '/',
+    redirect: '/login',
+  },
+  {
+    path: '/login',
+    component: Login,
   },
 ];
 

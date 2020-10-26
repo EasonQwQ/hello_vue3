@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 const state = {
   count: 0,
+  token: 0,
 };
 
 const mutations = {

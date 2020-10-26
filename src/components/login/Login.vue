@@ -1,86 +1,85 @@
 <template>
-  <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-    <a-form-item label="Activity name" v-bind="validateInfos.name">
-      <a-input v-model:value="modelRef.name" />
-    </a-form-item>
-    <a-form-item label="Activity zone" v-bind="validateInfos.region">
-      <a-select v-model:value="modelRef.region" placeholder="please select your zone">
-        <a-select-option value="shanghai">
-          Zone one
-        </a-select-option>
-        <a-select-option value="beijing">
-          Zone two
-        </a-select-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item label="Activity type" v-bind="validateInfos.type">
-      <a-checkbox-group v-model:value="modelRef.type">
-        <a-checkbox value="1" name="type">
-          Online
-        </a-checkbox>
-        <a-checkbox value="2" name="type">
-          Promotion
-        </a-checkbox>
-        <a-checkbox value="3" name="type">
-          Offline
-        </a-checkbox>
-      </a-checkbox-group>
-    </a-form-item>
-    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" @click="onSubmit">
-        Create
-      </a-button>
-      <a-button style="margin-left: 10px;" @click="resetFields">
-        Reset
-      </a-button>
-    </a-form-item>
-  </a-form>
+  <div class="form-view">
+    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="用户名" v-bind="validateInfos.name">
+        <a-input v-model:value="modelRef.username" placeholder="用户名" />
+      </a-form-item>
+      <a-form-item label="密码" v-bind="validateInfos.password">
+        <a-input-password
+          v-model:value="modelRef.password"
+          placeholder="密码"
+          autocomplete="on"
+        />
+      </a-form-item>
+      <a-form-item :wrapper-col="wrapperCol" class="btn-view">
+        <a-button type="primary" @click="onSubmit"> 登录 </a-button>
+        <a-button style="margin-left: 10px" @click="resetFields">
+          重置
+        </a-button>
+      </a-form-item>
+    </a-form>
+  </div>
 </template>
 <script>
-import { reactive, toRaw } from 'vue';
+import { customRef, reactive, toRaw } from 'vue';
 import { useForm } from '@ant-design-vue/use';
+import * as api from '../../api';
+function myRef(data) {
+  return customRef(async (track, trigger) => {
+    const res = await api.login(data);
+    console.log('myRef -> res', res);
+    return {
+      get() {
+        track();
+        console.log('object', res);
+        return data;
+      },
+      set() {
+        trigger();
+      },
+    };
+  });
+}
 export default {
   setup() {
     const modelRef = reactive({
-      name: '',
-      region: undefined,
+      username: '',
+      password: undefined,
       type: [],
     });
     const rulesRef = reactive({
-      name: [
+      username: [
         {
           required: true,
-          message: 'Please input name',
+          message: '用户名不能为空',
         },
       ],
-      region: [
+      password: [
         {
           required: true,
-          message: 'Please select region',
-        },
-      ],
-      type: [
-        {
-          required: true,
-          message: 'Please select type',
-          type: 'array',
+          message: '密码不能为空',
         },
       ],
     });
-    const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
-    const onSubmit = e => {
+    const { resetFields, validate, validateInfos } = useForm(
+      modelRef,
+      rulesRef
+    );
+    const onSubmit = (e) => {
       e.preventDefault();
       validate()
         .then(() => {
-          console.log(toRaw(modelRef));
+          const { username, password } = toRaw(modelRef);
+          const res = myRef({ username, password });
+          console.log('onSubmit -> res', res);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log('error', err);
         });
     };
     return {
       labelCol: { span: 4 },
-      wrapperCol: { span: 14 },
+      wrapperCol: { span: 20, offset: 1 },
       validateInfos,
       resetFields,
       modelRef,
@@ -89,3 +88,19 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.form-view {
+  margin: auto;
+  margin-top: 200px;
+  width: 600px;
+  background-color: #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.btn-view {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+</style>
