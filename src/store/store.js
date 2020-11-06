@@ -1,7 +1,9 @@
 import { createStore } from 'vuex';
 const state = {
   count: 0,
-  token: 0,
+  token: '0a',
+  userInfo: {},
+  menuCollapsed: false,
 };
 
 const mutations = {
@@ -10,6 +12,18 @@ const mutations = {
   },
   decrement(state) {
     state.count--;
+  },
+  saveToken(state, token) {
+    state.token = 'Bearer ' + token;
+  },
+  saveUserInfo(state, userInfo) {
+    state.userInfo = userInfo;
+  },
+  toggleCollapsed(state) {
+    state.menuCollapsed = !state.menuCollapsed;
+  },
+  openCollapsed(state) {
+    state.menuCollapsed = false;
   },
 };
 
