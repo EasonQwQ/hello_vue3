@@ -23,7 +23,7 @@
         />
       </a-form-item>
       <a-form-item :wrapper-col="wrapperCol" class="btn-view">
-        <a-button type="primary" @click="onSubmit"> 登录 </a-button>
+        <a-button type="primary" @click="onSubmit" :loading="loading"> 登录 </a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -35,6 +35,7 @@ import * as api from '../../api';
 export default {
   data() {
     return {
+      loading:false,
       form: {
         username: '1',
         password: '1',
@@ -76,6 +77,7 @@ export default {
       this.$refs.ruleForm
         .validate()
         .then(async () => {
+          that.loading = true;
           const { username, password } = toRaw(this.form);
           const { code, data: token } = await api.login({ username, password });
           if (code === 1) {
@@ -88,7 +90,12 @@ export default {
           }
         })
         .catch((error) => {
+          that.$message.error('网络错误');
           console.log('error', error);
+        })
+        .finally(() => {
+          console.log(123);
+          that.loading = false;
         });
     },
   },
